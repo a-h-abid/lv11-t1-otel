@@ -1,0 +1,26 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - vendor/nesbot/carbon/extension.neon
+    - phar://phpstan.phar/conf/bleedingEdge.neon
+
+parameters:
+    paths:
+        - app/
+
+    # Level 10 is the highest level
+    level: 1
+
+    parallel:
+        processTimeout: 300.0
+
+#    ignoreErrors:
+#        - '#PHPDoc tag @var#'
+#
+
+    excludePaths:
+        - ./vendor/*/test/*.php
+        - ./vendor/*/tests/*.php
+        # Below excluded to resolve MemoryLeaks
+        #- ./vendor/nesbot/carbon/src/Carbon/CarbonPeriod.php
+        #- ./vendor/nesbot/carbon/src/Carbon/Laravel/ServiceProvider.php
+        #- ./vendor/nesbot/carbon/src/Carbon/PHPStan/*.php

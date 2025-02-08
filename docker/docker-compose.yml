@@ -1,0 +1,92 @@
+services:
+  nginx:
+    image: ${COMPOSE_PROJECT_NAME:-myapp}_nginx:latest
+    build:
+      dockerfile: docker/nginx/nginx.Dockerfile
+      context: ../
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+        NGINX_TAG_SUFFIX: ${NGINX_TAG_SUFFIX:-}
+        TIMEZONE: ${APP_TIMEZONE:-Asia/Dhaka}
+        EXTRA_INSTALL_APT_PACKAGES: ${NGINX_EXTRA_INSTALL_APT_PACKAGES:-}
+    depends_on:
+      - php
+    restart: no
+    networks:
+      common-net:
+        aliases:
+          - ${COMPOSE_PROJECT_NAME:-myapp}_nginx
+    deploy:
+      resources:
+        limits:
+          cpus: '${NGINX_CPU_LIMIT:-1.0}'
+          memory: ${NGINX_MEMORY_LIMIT:-64M}
+
+  php:
+    image: ${COMPOSE_PROJECT_NAME:-myapp}_php:latest
+    build:
+      dockerfile: docker/php/php.Dockerfile
+      context: ../
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+        TIMEZONE: ${APP_TIMEZONE:-Asia/Dhaka}
+        EXTRA_INSTALL_APT_PACKAGES: ${PHP_EXTRA_INSTALL_APT_PACKAGES:-}
+        EXTRA_INSTALL_PHP_EXTENSIONS: ${PHP_EXTRA_INSTALL_PHP_EXTENSIONS:-}
+      secrets:
+        - composer_auth
+    restart: no
+    env_file:
+      - .envs/php-fpm.env
+      - .envs/php-ini.env
+      - .envs/app.env
+    networks:
+      common-net:
+        aliases:
+          - ${COMPOSE_PROJECT_NAME:-myapp}_php
+    deploy:
+      resources:
+        limits:
+          cpus: '${PHP_CPU_LIMIT:-1.0}'
+          memory: ${PHP_MEMORY_LIMIT:-128M}
+    volumes:
+      - composer-cache:/home/appuser/.composer/cache
+      - ${COMPOSER_AUTH_JSON_PATH:-~/.config/composer/auth.json}:/home/appuser/.composer/auth.json
+
+  php-cli:
+    image: ${COMPOSE_PROJECT_NAME:-myapp}_php:latest
+    restart: no
+    env_file:
+      - .envs/php-fpm.env
+      - .envs/php-ini.env
+      - .envs/app.env
+    networks:
+      - common-net
+    command: ["php", "-v"]
+    deploy:
+      resources:
+        limits:
+          cpus: '${PHP_CLI_CPU_LIMIT:-1.0}'
+          memory: ${PHP_CLI_MEMORY_LIMIT:-2G}
+    volumes:
+      - composer-cache:/home/appuser/.composer/cache
+      - ${COMPOSER_AUTH_JSON_PATH:-~/.config/composer/auth.json}:/home/appuser/.composer/auth.json
+
+secrets:
+  composer_auth:
+    file: ${COMPOSER_AUTH_JSON_PATH:-~/.config/composer/auth.json}
+
+networks:
+  default:
+    driver: bridge
+  common-net:
+    external: true
+
+volumes:
+  composer-cache:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${COMPOSER_CACHE_PATH:-~/.cache/composer}
+      o: bind

@@ -1,0 +1,15 @@
+services:
+  nginx:
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./nginx/etc-nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/etc-nginx/conf.d:/etc/nginx/conf.d
+      - ../public:/home/appuser/appsrc/public
+
+  php:
+    volumes:
+      - ./php/etc-phpfpm/php-fpm.conf:/usr/local/etc/php-fpm.conf
+      - ./php/etc-phpfpm/php-fpm.d:/usr/local/etc/php-fpm.d
+      - ./php/etc-php/php.ini:/usr/local/etc/php/php.ini
+      - ../:/home/appuser/appsrc
