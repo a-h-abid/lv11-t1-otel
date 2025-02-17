@@ -62,6 +62,10 @@ return [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
+            'formatter' => env('LOG_STDERR_FORMATTER'),
+            'formatter_with' => [
+                'ignoreEmptyContextAndExtra' => true,
+            ],
             'replace_placeholders' => true,
         ],
 
@@ -69,6 +73,10 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
+            'formatter' => env('LOG_STDERR_FORMATTER'),
+            'formatter_with' => [
+                'ignoreEmptyContextAndExtra' => true,
+            ],
             'days' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
         ],
@@ -99,6 +107,9 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'handler' => StreamHandler::class,
             'formatter' => env('LOG_STDERR_FORMATTER'),
+            'formatter_with' => [
+                'ignoreEmptyContextAndExtra' => true,
+            ],
             'with' => [
                 'stream' => 'php://stderr',
             ],
@@ -109,7 +120,6 @@ return [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'debug'),
             'handler' => \OpenTelemetry\Contrib\Logs\Monolog\Handler::class,
-            'formatter' => env('LOG_STDERR_FORMATTER'),
             'with' => [
                 'stream' => 'php://stderr',
             ],
