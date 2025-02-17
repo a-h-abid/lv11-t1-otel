@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-ARG PHP_VERSION="8.4.2"
+ARG PHP_VERSION="8.4.4"
 
 FROM php:${PHP_VERSION}-fpm
 
