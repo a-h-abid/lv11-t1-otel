@@ -16,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
             function () {
                 return new \OpenTelemetry\Contrib\Logs\Monolog\Handler(
                     \OpenTelemetry\API\Globals::loggerProvider(),
-                    \Monolog\Level::Debug
+                    \Monolog\Level::Info
                 );
             }
         );
